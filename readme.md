@@ -12,7 +12,7 @@ var koa = require('koa');
 var app = koa();
 var jade = require('jade');
 require('koa-generic-views')(app,{
-  default: 'html'
+  defaultExt: 'html'
 });
 
 app.engine('jade',function(view,locals){
