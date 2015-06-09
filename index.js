@@ -25,10 +25,12 @@ module.exports = function(app, opts) {
   if (opts.defaultExt) {
     if (opts.defaultExt[0] !== '.') {
       defaultExt = opt.defaultExt + '.'
-    } else {
+    }
+    else {
       defaultExt = opts.defaultExt;
     }
-  } else {
+  }
+  else {
     defaultExt = '.html';
   }
 
@@ -39,16 +41,19 @@ module.exports = function(app, opts) {
     var ext = extname(view);
     if (!ext) {
       view += defaultExt;
+      ext = defaultExt;
     }
 
     /**
      * decide engine
      */
-    ext = ext || defaultExt;
     var engine = app.engines[ext];
     if (!engine) {
-      var engineName = ext.slice(1);
-      engine = app.engines[ext] = require(engineName);
+      ext = ext.slice(1);
+
+      // no match engine registered
+      var msg = fmt('no engine registered for `.%s` file', ext);
+      throw new Error(msg);
     }
 
     /**
@@ -61,19 +66,12 @@ module.exports = function(app, opts) {
      */
     locals = locals || {};
     this.state = this.state || {};
-    locals = assign(locals,this.state);
+    locals = assign(locals, this.state);
 
     /**
      * var result = yield this.render('index',{});
      */
-    return this.body = yield new Promise(function(resolve, reject) {
-      engine(view, locals, function(err, result) {
-        if (err) {
-          return reject(err);
-        }
-        resolve(result);
-      });
-    });
+    return this.body = yield engine(view, locals);
   };
 
   /**

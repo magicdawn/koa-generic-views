@@ -1,7 +1,7 @@
 {
-  "name": "koa-views",
+  "name": "koa-generic-views",
   "version": "0.0.1",
-  "description": "koa generic views",
+  "description": "generic view interface for koa",
   "main": "index.js",
   "directories": {
     "test": "test"
