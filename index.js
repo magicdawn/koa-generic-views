@@ -10,6 +10,17 @@ var join = require('path').join;
 var extname = require('path').extname;
 
 /**
+ * ext without `.`
+ */
+var ensureExt = function(ext) {
+  if (ext[0] === '.') {
+    return ext.substr(1);
+  }
+
+  return ext;
+};
+
+/**
  * Add `render` method
  */
 module.exports = function(app, opts) {
@@ -23,15 +34,10 @@ module.exports = function(app, opts) {
    */
   var defaultExt;
   if (opts.defaultExt) {
-    if (opts.defaultExt[0] !== '.') {
-      defaultExt = opt.defaultExt + '.'
-    }
-    else {
-      defaultExt = opts.defaultExt;
-    }
+    defaultExt = ensureExt(opts.defaultExt);
   }
   else {
-    defaultExt = '.html';
+    defaultExt = 'html';
   }
 
   /**
@@ -40,7 +46,7 @@ module.exports = function(app, opts) {
   app.context.render = function * (view, locals) {
     var ext = extname(view);
     if (!ext) {
-      view += defaultExt;
+      view += '.' + defaultExt;
       ext = defaultExt;
     }
 
@@ -49,8 +55,6 @@ module.exports = function(app, opts) {
      */
     var engine = app.engines[ext];
     if (!engine) {
-      ext = ext.slice(1);
-
       // no match engine registered
       var msg = fmt('no engine registered for `.%s` file', ext);
       throw new Error(msg);
@@ -83,11 +87,7 @@ module.exports = function(app, opts) {
    * add a engine
    */
   app.engine = function(ext, engine) {
-
-    if (ext[0] !== '.') {
-      ext += '.';
-    }
-
+    ext = ensureExt(ext);
     this.engines[ext] = engine;
   };
 };

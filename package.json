@@ -11,6 +11,7 @@
     "lodash": "^3.7.0"
   },
   "devDependencies": {
+    "koa": "^0.21.0",
     "mocha": "^2.2.4"
   },
   "scripts": {
