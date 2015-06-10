@@ -4,3 +4,5 @@ node_js:
   - "iojs-v2"
 script: "make test-cover"
 after_script: "npm install coveralls@2 && cat ./coverage/lcov.info | coveralls"
+notifications:
+  email: false
