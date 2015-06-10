@@ -7,4 +7,4 @@ test-cover:
 	@$(bin)/istanbul cover ./node_modules/mocha/bin/_mocha \
 		-- -u exports
 
-.PHONY: test cover
+.PHONY: test test-cover
