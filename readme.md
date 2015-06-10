@@ -37,4 +37,4 @@ koa-views -> [co-views](https://github.com/tj/co-views) -> [co-render](https://g
 And only engine supported in consolidate.js supported in koa-views;
 
 ## License
-the MIT License (magicdawn@qq.com)
+MIT http://magicdawn.mit-license.org
