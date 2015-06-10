@@ -9,19 +9,34 @@ Generic view interface for koa
 npm i koa-generic-views --save
 ```
 
+## API
+```js
+var views = require('koa-generic-views');
+views(app,options);
+```
+### Options
+
+- viewRoot: set the root path
+- defaultExt: set the default extension
+
+
 ## Example
 ```js
 var koa = require('koa');
 var app = koa();
 var jade = require('jade');
 require('koa-generic-views')(app,{
-  defaultExt: 'html'
+  defaultExt: 'jade'
 });
 
 app.engine('jade',function(view,locals){
   return function(done){
     jade.renderFile(view,locals,done);
   };
+});
+
+app.use(function *(){
+  yield this.render('template');
 });
 ```
 
