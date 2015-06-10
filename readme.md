@@ -1,5 +1,6 @@
 # koa-generic-views
 Generic view interface for koa
+[![Build Status](https://travis-ci.org/magicdawn/koa-generic-views.svg?branch=master)](https://travis-ci.org/magicdawn/koa-generic-views)
 
 ## Install
 ```sh
