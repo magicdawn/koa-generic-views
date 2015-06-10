@@ -1,9 +1,10 @@
-
-bin = ./node_modules/.bin/
+bin = ./node_modules/.bin
 
 test:
-	@$(bin)mocha \
-		--harmony-generators \
-		--reporter dot
+	@$(bin)/mocha
 
-.PHONY: test
+test-cover:
+	@$(bin)/istanbul cover ./node_modules/mocha/bin/_mocha \
+		-- -u exports
+
+.PHONY: test cover

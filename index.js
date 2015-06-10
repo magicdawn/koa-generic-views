@@ -2,7 +2,7 @@
  * Module dependencies.
  */
 var debug = require('debug')('koa-generic-views');
-var assign = require('lodash').assign;
+var merge = require('lodash').merge;
 var fmt = require('util').format;
 var resolve = require('path').resolve;
 var dirname = require('path').dirname;
@@ -69,8 +69,7 @@ module.exports = function(app, opts) {
      * decide locals
      */
     locals = locals || {};
-    this.state = this.state || {};
-    locals = assign(locals, this.state);
+    locals = merge(locals, this.state);
 
     /**
      * var result = yield this.render('index',{});

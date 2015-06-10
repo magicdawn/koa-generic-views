@@ -1,144 +1,104 @@
-var request = require('supertest');
-var views = require('../');
-var should = require('should');
 var koa = require('koa');
+var views = require('../');
+var jade = require('jade');
+var request = require('supertest');
+var should = require('should');
+var cheerio = require('cheerio');
+var assert = require('assert');
 
-describe('koa-views', function() {
+/**
+ * create new koa app
+ */
+var createApp = function() {
+  var app = koa();
+
+  // mount app
+  require('../')(app, {
+    defaultExt: 'jade',
+    viewRoot: __dirname + '/views'
+  });
+
+  // add jade
+  app.engine('jade', function(a, b) {
+    return function(done) {
+      jade.renderFile(a, b, done);
+    };
+  });
+
+  return app;
+};
+
+describe('koa-generic-views', function(done) {
   it('should have render/engine/engines', function(done) {
-    var app = koa()
-      .use(views())
-      .use(function * () {
-        this.render.should.ok
-        this.render.should.Function
-      })
+    var app = createApp();
 
-    request(app.listen()).get('/')
-      .expect(404, done)
-  })
+    app.use(function * () {
+      this.render.should.ok;
+      yield this.render('test');
+    });
 
-  it('default to html', function(done) {
-    var app = koa()
-      .use(views())
-      .use(function * () {
-        yield this.render('./fixtures/basic')
-      })
+    request(app.listen())
+      .get('/')
+      .expect(200, done);
+  });
 
-    request(app.listen()).get('/')
-      .expect('Content-Type', /html/)
-      .expect(/basic:html/)
-      .expect(200, done)
-  })
+  it('should handle locals right', function(done) {
+    var app = createApp();
 
-  it('default to [ext] if a default engine is set', function(done) {
-    var app = koa()
-      .use(views({
-        default: 'jade'
-      }))
-      .use(function * () {
-        yield this.render('./fixtures/basic')
-      })
+    app.use(function * () {
+      this.state.user = {
+        name: 'someUserName',
+        points: 1000
+      };
 
-    request(app.listen()).get('/')
-      .expect('Content-Type', /html/)
-      .expect(/basic:jade/)
-      .expect(200, done)
-  })
-
-  it('set and render state', function(done) {
-    var app = koa()
-      .use(views({
-        default: 'jade'
-      }))
-      .use(function * () {
-        this.state.engine = 'jade'
-        yield this.render('./fixtures/global-state')
-      })
-
-    request(app.listen()).get('/')
-      .expect('Content-Type', /html/)
-      .expect(/basic:jade/)
-      .expect(200, done)
-  })
-
-  // #25
-  it('works with circular references in state', function(done) {
-    var app = koa()
-      .use(views({
-        default: 'jade'
-      }))
-      .use(function * () {
-        this.state = {
-          a: {},
-          app: app
+      yield this.render('locals', {
+        title: 'awesome site',
+        user: {
+          github: 'https://github.com/magicdawn'
         }
+      });
+    });
 
-        this.state.a.a = this.state.a
-
-        yield this.render('./fixtures/global-state', {
-          app: app,
-          b: this.state,
-          engine: 'jade'
-        })
-      })
-
-    request(app.listen()).get('/')
+    request(app.listen())
+      .get('/')
+      .expect(200)
       .expect('Content-Type', /html/)
-      .expect(/basic:jade/)
-      .expect(200, done)
-  })
+      .end(function(err, res) {
+        var $ = cheerio.load(res.text);
 
-  it('`map` given `engine` to given file `ext`', function(done) {
-    var app = koa()
-      .use(views({
-        map: {
-          html: 'underscore'
-        }
-      }))
-      .use(function * () {
-        this.state.engine = 'underscore'
-        yield this.render('./fixtures/underscore')
-      })
+        // title
+        $('title').text().should.equal('awesome site');
 
-    request(app.listen()).get('/')
-      .expect('Content-Type', /html/)
-      .expect(/basic:underscore/)
-      .expect(200, done)
-  })
+        // locals & state
+        $('ul li').length.should.equal(3);
+        $('ul li').eq(0).text().should.match(/someUserName/);
+        $('ul li').eq(1).text().should.match(/1000/);
+        $('ul li').eq(2).text().should.match(/magicdawn/);
 
-  it('merges global and local state ', function(done) {
-    var app = koa()
-      .use(views({
-        default: 'jade'
-      }))
-      .use(function * () {
-        this.state.engine = 'jade'
+        // test is done
+        done();
+      });
+  });
 
-        yield this.render('./fixtures/state', {
-          type: 'basic'
-        })
-      })
+  it('throws when engine not registered', function(done) {
+    var app = koa();
 
-    request(app.listen()).get('/')
-      .expect('Content-Type', /html/)
-      .expect(/basic:jade/)
-      .expect(200, done)
-  })
+    // mount app
+    views(app, {
+      viewRoot: __dirname + '/views'
+    });
 
-  it('yields to the next middleware if this.render is already defined', function(done) {
-    var app = koa()
-      .use(function * (next) {
-        this.render = true
-        yield next
-      })
-      .use(views())
-      .use(function * () {
-        this.body = 'hello'
-      })
+    app.use(function * () {
+      try {
+        yield this.render('default');
+      }
+      catch (e) {
+        e.message.should.match(/no engine registered/);
+      }
+    });
 
-    request(app.listen()).get('/')
-      .expect('hello')
-      .expect(200, done)
-  })
-
-  // TODO: #23
-})
+    request(app.listen())
+      .get('/')
+      .expect(404, done);
+  });
+});
