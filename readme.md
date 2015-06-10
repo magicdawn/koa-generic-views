@@ -1,6 +1,8 @@
 # koa-generic-views
 Generic view interface for koa
+
 [![Build Status](https://travis-ci.org/magicdawn/koa-generic-views.svg?branch=master)](https://travis-ci.org/magicdawn/koa-generic-views)
+[![Coverage Status](https://coveralls.io/repos/magicdawn/koa-generic-views/badge.svg?branch=master)](https://coveralls.io/r/magicdawn/koa-generic-views?branch=master)
 
 ## Install
 ```sh
