@@ -85,7 +85,7 @@ describe('koa-generic-views', function(done) {
 
     // mount app
     views(app, {
-      viewRoot: __dirname + '/views'
+      viewRoot: __dirname + '/views',
     });
 
     app.use(function * () {
@@ -100,5 +100,27 @@ describe('koa-generic-views', function(done) {
     request(app.listen())
       .get('/')
       .expect(404, done);
+  });
+
+  it('.ext or ext is ok', function(done) {
+    var app = koa();
+    views(app,{
+      defaultExt: 'jade',
+      viewRoot: __dirname + '/views'
+    });
+
+    app.engine('.jade',function(view,locals){
+      return function(done){
+        return jade.renderFile(view, locals, done);
+      };
+    });
+
+    app.use(function * (){
+      yield this.render('test');
+    });
+
+    request(app.listen())
+      .get('/')
+      .expect(200,done);
   });
 });
