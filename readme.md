@@ -29,11 +29,28 @@ require('koa-generic-views')(app,{
   defaultExt: 'jade'
 });
 
+// reutrn thunks
 app.engine('jade',function(view,locals){
   return function(done){
     jade.renderFile(view,locals,done);
   };
 });
+
+// or Promise
+app.engine('jade',function(views,locals){
+  return new Promise(function(resolve,reject){
+    jade.renderFile(views,locals,function(err,res){
+      if(err){
+        return reject(err);
+      }
+      resolve(res);
+    })
+  })
+});
+
+// or simply use bluebird, Promise.promisify
+var Promise = require('bluebird');
+app.engine('jade',Promise.promisify(jade.renderFile,jade));
 
 app.use(function *(){
   yield this.render('template');
