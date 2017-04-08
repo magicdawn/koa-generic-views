@@ -1,4 +1,6 @@
 # koa-generic-views
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/magicdawn/koa-generic-views.svg)](https://greenkeeper.io/)
 Generic view interface for koa
 
 [![Build Status](https://travis-ci.org/magicdawn/koa-generic-views.svg?branch=master)](https://travis-ci.org/magicdawn/koa-generic-views)
