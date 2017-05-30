@@ -1,59 +1,59 @@
 'use strict'
 
-let koa = require('koa')
-let views = require('../')
-let jade = require('jade')
-let request = require('supertest')
-let should = require('should')
-let cheerio = require('cheerio')
-let assert = require('assert')
+const Koa = require('koa')
+const views = require('../')
+const request = require('supertest')
+const should = require('should')
+const cheerio = require('cheerio')
+const assert = require('assert')
+const pify = require('promise.ify')
+const njk = pify.all(require('nunjucks'))
+
+// console.log(njk);
 
 /**
  * create new koa app
  */
-let createApp = function() {
-  let app = koa()
+const createApp = function() {
+  const app = new Koa()
 
   // mount app
   require('../')(app, {
-    defaultExt: 'jade',
+    defaultExt: '.njk',
     viewRoot: __dirname + '/views'
   })
 
-  // add jade
-  app.engine('jade', function(a, b) {
-    return function(done) {
-      jade.renderFile(a, b, done)
-    }
-  })
+  // add default engine
+  app.engine('.njk', njk.renderAsync)
 
   return app
 }
 
-describe('koa-generic-views', function(done) {
-  it('should have render/engine/engines', function(done) {
-    let app = createApp()
+describe('koa-generic-views', function() {
+  it('should have render/engine/engines', async function() {
+    const app = createApp()
 
-    app.use(function * () {
-      this.render.should.ok
-      yield this.render('test')
+    app.use(ctx => {
+      ctx.render.should.ok
+      return ctx.render('test')
     })
 
-    request(app.listen())
+    const res = await request(app.listen())
       .get('/')
-      .expect(200, done)
+      .expect(200)
+      .expect('Content-Type', /text\/html/)
   })
 
-  it('should handle locals right', function(done) {
-    let app = createApp()
+  it('should handle locals right', async function() {
+    const app = createApp()
 
-    app.use(function * () {
-      this.state.user = {
+    app.use(ctx => {
+      ctx.state.user = {
         name: 'someUserName',
         points: 1000
       }
 
-      yield this.render('locals', {
+      return ctx.render('locals', {
         title: 'awesome site',
         user: {
           github: 'https://github.com/magicdawn'
@@ -61,67 +61,57 @@ describe('koa-generic-views', function(done) {
       })
     })
 
-    request(app.listen())
+    const res = await request(app.listen())
       .get('/')
       .expect(200)
       .expect('Content-Type', /html/)
-      .end(function(err, res) {
-        let $ = cheerio.load(res.text)
+    const $ = cheerio.load(res.text)
 
-        // title
-        $('title').text().should.equal('awesome site')
+    // title
+    $('title').text().should.equal('awesome site')
 
-        // locals & state
-        $('ul li').length.should.equal(3)
-        $('ul li').eq(0).text().should.match(/someUserName/)
-        $('ul li').eq(1).text().should.match(/1000/)
-        $('ul li').eq(2).text().should.match(/magicdawn/)
-
-        // test is done
-        done()
-      })
+    // locals & state
+    $('ul li').length.should.equal(3)
+    $('ul li').eq(0).text().should.match(/someUserName/)
+    $('ul li').eq(1).text().should.match(/1000/)
+    $('ul li').eq(2).text().should.match(/magicdawn/)
   })
 
-  it('throws when engine not registered', function(done) {
-    let app = koa()
+  it('throws when engine not registered', async function() {
+    const app = new Koa()
 
     // mount app
     views(app, {
       viewRoot: __dirname + '/views',
     })
 
-    app.use(function * () {
+    app.use(async ctx => {
       try {
-        yield this.render('default')
-      }      catch (e) {
+        await ctx.render('default')
+      } catch (e) {
         e.message.should.match(/no engine registered/)
       }
     })
 
-    request(app.listen())
+    await request(app.listen())
       .get('/')
-      .expect(404, done)
+      .expect(404)
   })
 
-  it('.ext or ext is ok', function(done) {
-    let app = koa()
-    views(app,{
-      defaultExt: 'jade',
+  it('.ext or ext is ok', async function() {
+    const app = new Koa()
+    views(app, {
+      defaultExt: '.njk',
       viewRoot: __dirname + '/views'
     })
+    app.engine('.njk', njk.renderAsync)
 
-    app.engine('.jade',function(view,locals){
-      return function(done){
-        return jade.renderFile(view, locals, done)
-      }
+    app.use(ctx => {
+      return ctx.render('test')
     })
 
-    app.use(function * (){
-      yield this.render('test')
-    })
-
-    request(app.listen())
+    await request(app.listen())
       .get('/')
-      .expect(200,done)
+      .expect(200)
   })
 })

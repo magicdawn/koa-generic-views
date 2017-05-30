@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 const debug = require('debug')('koa-generic-views')
-const merge = require('lodash').merge
+const _merge = require('lodash.merge')
 const fmt = require('util').format
 const resolve = require('path').resolve
 const dirname = require('path').dirname
@@ -46,6 +46,8 @@ module.exports = function(app, opts) {
    * render function
    */
   app.context.render = async function(view, locals) {
+    const ctx = this
+
     let ext = extname(view)
     if (!ext) {
       view += '.' + defaultExt
@@ -70,13 +72,17 @@ module.exports = function(app, opts) {
     /**
      * decide locals
      */
-    locals = locals || {}
-    locals = merge(locals, this.state)
+
+    locals = _merge({}, app.locals, ctx.state, locals)
 
     /**
      * var result = await this.render('index',{});
      */
-    return this.body = await engine(view, locals)
+
+    const text = await engine(view, locals)
+    this.type = 'html'
+    this.body = text
+    return text
   }
 
   /**
