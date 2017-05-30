@@ -1,92 +1,96 @@
+'use strict'
+
 /**
  * Module dependencies.
  */
-var debug = require('debug')('koa-generic-views');
-var merge = require('lodash').merge;
-var fmt = require('util').format;
-var resolve = require('path').resolve;
-var dirname = require('path').dirname;
-var join = require('path').join;
-var extname = require('path').extname;
+const debug = require('debug')('koa-generic-views')
+const merge = require('lodash').merge
+const fmt = require('util').format
+const resolve = require('path').resolve
+const dirname = require('path').dirname
+const join = require('path').join
+const extname = require('path').extname
 
 /**
  * ext without `.`
  */
-var ensureExt = function(ext) {
+let ensureExt = function(ext) {
   if (ext[0] === '.') {
-    return ext.substr(1);
+    return ext.substr(1)
   }
 
-  return ext;
-};
+  return ext
+}
 
 /**
  * Add `render` method
  */
+
 module.exports = function(app, opts) {
   /**
    * viewRoot defaults to `views`
    */
-  var viewRoot = resolve(opts.viewRoot || 'views');
+  let viewRoot = resolve(opts.viewRoot || 'views')
 
   /**
    * default extension
    */
-  var defaultExt;
+  let defaultExt
   if (opts.defaultExt) {
-    defaultExt = ensureExt(opts.defaultExt);
-  }
-  else {
-    defaultExt = 'html';
+    defaultExt = ensureExt(opts.defaultExt)
+  } else {
+    defaultExt = 'html'
   }
 
   /**
    * render function
    */
-  app.context.render = function * (view, locals) {
-    var ext = extname(view);
+  app.context.render = async function(view, locals) {
+    let ext = extname(view)
     if (!ext) {
-      view += '.' + defaultExt;
-      ext = defaultExt;
+      view += '.' + defaultExt
+      ext = defaultExt
     }
 
     /**
      * decide engine
      */
-    var engine = app.engines[ext];
+    let engine = app.engines[ext]
     if (!engine) {
       // no match engine registered
-      var msg = fmt('no engine registered for `.%s` file', ext);
-      throw new Error(msg);
+      let msg = fmt('no engine registered for `.%s` file', ext)
+      throw new Error(msg)
     }
 
     /**
      * decide view file
      */
-    view = join(viewRoot, view);
+    view = join(viewRoot, view)
 
     /**
      * decide locals
      */
-    locals = locals || {};
-    locals = merge(locals, this.state);
+    locals = locals || {}
+    locals = merge(locals, this.state)
 
     /**
-     * var result = yield this.render('index',{});
+     * var result = await this.render('index',{});
      */
-    return this.body = yield engine(view, locals);
-  };
+    return this.body = await engine(view, locals)
+  }
 
   /**
    * engine map
    */
-  app.engines = {};
+
+  app.engines = {}
 
   /**
    * add a engine
    */
+
   app.engine = function(ext, engine) {
-    ext = ensureExt(ext);
-    this.engines[ext] = engine;
-  };
-};
+    ext = ensureExt(ext)
+    this.engines[ext] = engine
+  }
+}
