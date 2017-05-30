@@ -4,7 +4,6 @@
 [![Build Status](https://img.shields.io/travis/magicdawn/koa-generic-views.svg?style=flat-square)](https://travis-ci.org/magicdawn/koa-generic-views)
 [![Coverage Status](https://img.shields.io/codecov/c/github/magicdawn/koa-generic-views.svg?style=flat-square)](https://codecov.io/gh/magicdawn/koa-generic-views)
 [![npm version](https://img.shields.io/npm/v/koa-generic-views.svg?style=flat-square)](https://www.npmjs.com/package/koa-generic-views)
-<!-- [![node](https://img.shields.io/node/v/koa-generic-views.svg?style=flat-square)](https://www.npmjs.com/package/koa-generic-views) -->
 [![npm downloads](https://img.shields.io/npm/dm/koa-generic-views.svg?style=flat-square)](https://www.npmjs.com/package/koa-generic-views)
 [![npm license](https://img.shields.io/npm/l/koa-generic-views.svg?style=flat-square)](http://magicdawn.mit-license.org)
 
