@@ -104,7 +104,7 @@ describe('koa-generic-views', function() {
       defaultExt: '.njk',
       viewRoot: __dirname + '/views'
     })
-    app.engine('.njk', njk.renderAsync)
+    app.engine('njk', njk.renderAsync) // no `.` in ext
 
     app.use(ctx => {
       return ctx.render('test')
