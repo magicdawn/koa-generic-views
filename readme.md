@@ -21,6 +21,7 @@ views(app,options);
 
 - viewRoot: set the root path
 - defaultExt: set the default extension
+- cache: when final locals don't have `cache` field, get cache flag from `opts.cache`, then get cache from `process.env.NODE_ENV`
 
 
 ## Example
