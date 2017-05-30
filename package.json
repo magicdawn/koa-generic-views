@@ -26,8 +26,11 @@
     "report-cover": "codecov"
   },
   "files": [
-    "index.js",
-    "README.md"
+    "package.json",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "index.js"
   ],
   "repository": {
     "type": "git",
