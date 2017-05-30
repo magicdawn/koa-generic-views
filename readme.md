@@ -1,8 +1,11 @@
 # koa-generic-views
-Generic view interface for koa
+> generic view interface for koa
 
-[![Build Status](https://travis-ci.org/magicdawn/koa-generic-views.svg?branch=master)](https://travis-ci.org/magicdawn/koa-generic-views)
-[![Coverage Status](https://coveralls.io/repos/magicdawn/koa-generic-views/badge.svg?branch=master)](https://coveralls.io/r/magicdawn/koa-generic-views?branch=master)
+[![Build Status](https://img.shields.io/travis/magicdawn/koa-generic-views.svg?style=flat-square)](https://travis-ci.org/magicdawn/koa-generic-views)
+[![Coverage Status](https://img.shields.io/codecov/c/github/magicdawn/koa-generic-views.svg?style=flat-square)](https://codecov.io/gh/magicdawn/koa-generic-views)
+[![npm version](https://img.shields.io/npm/v/koa-generic-views.svg?style=flat-square)](https://www.npmjs.com/package/koa-generic-views)
+[![npm downloads](https://img.shields.io/npm/dm/koa-generic-views.svg?style=flat-square)](https://www.npmjs.com/package/koa-generic-views)
+[![npm license](https://img.shields.io/npm/l/koa-generic-views.svg?style=flat-square)](http://magicdawn.mit-license.org)
 
 ## Install
 ```sh
@@ -61,6 +64,8 @@ app.engine('ext',engine);
 engine should return a thunk or a Promise
 so use `Promise.promisify` with bluebird is also supported.
 
+
+
 ## Why
 why not [koa-views](https://github.com/queckezz/koa-views)?
 
@@ -69,5 +74,8 @@ koa-views -> [co-views](https://github.com/tj/co-views) -> [co-render](https://g
 
 Any engine not supported in consolidate need to PR to consolidate.I hate centerlized.
 
+## Changelog
+[CHANGELOG.md](CHANGELOG.md)
+
 ## License
-MIT http://magicdawn.mit-license.org
+the MIT License http://magicdawn.mit-license.org

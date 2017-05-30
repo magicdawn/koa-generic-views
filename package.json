@@ -14,12 +14,17 @@
     "koa": "^0.21.0",
     "mocha": "^2.2.4",
     "should": "^6.0.3",
-    "supertest": "^1.0.1"
+    "supertest": "^1.0.1",
+    "codecov": "^2.2.0",
+    "eslint": "^3.19.0",
+    "istanbul": "^1.1.0-alpha.1"
   },
   "scripts": {
-    "test": "make test"
+    "test": "mocha",
+    "test-cover": "istanbul cover _mocha -- -u exports",
+    "report-cover": "codecov"
   },
-  "files":[
+  "files": [
     "index.js",
     "README.md"
   ],
