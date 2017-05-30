@@ -30,7 +30,8 @@ module.exports = function(app, opts) {
   /**
    * viewRoot defaults to `views`
    */
-  let viewRoot = resolve(opts.viewRoot || 'views')
+
+  const viewRoot = resolve(opts.viewRoot || 'views')
 
   /**
    * default extension
@@ -57,7 +58,7 @@ module.exports = function(app, opts) {
     /**
      * decide engine
      */
-    let engine = app.engines[ext]
+    const engine = app.engines[ext]
     if (!engine) {
       // no match engine registered
       let msg = fmt('no engine registered for `.%s` file', ext)
@@ -74,6 +75,16 @@ module.exports = function(app, opts) {
      */
 
     locals = _merge({}, app.locals, ctx.state, locals)
+
+    // add cache
+    const isEmpty = val => val === null || typeof val === 'undefined'
+    if (isEmpty(locals.cache)) {
+      if (!isEmpty(opts.cache)) {
+        locals.cache = opts.cache
+      } else {
+        locals.cache = process.env.NODE_ENV === 'production'
+      }
+    }
 
     /**
      * var result = await this.render('index',{});
