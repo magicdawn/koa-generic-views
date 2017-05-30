@@ -4,6 +4,7 @@
 [![Build Status](https://img.shields.io/travis/magicdawn/koa-generic-views.svg?style=flat-square)](https://travis-ci.org/magicdawn/koa-generic-views)
 [![Coverage Status](https://img.shields.io/codecov/c/github/magicdawn/koa-generic-views.svg?style=flat-square)](https://codecov.io/gh/magicdawn/koa-generic-views)
 [![npm version](https://img.shields.io/npm/v/koa-generic-views.svg?style=flat-square)](https://www.npmjs.com/package/koa-generic-views)
+[![node](https://img.shields.io/node/v/koa-generic-views.svg?style=flat-square)](https://www.npmjs.com/package/koa-generic-views)
 [![npm downloads](https://img.shields.io/npm/dm/koa-generic-views.svg?style=flat-square)](https://www.npmjs.com/package/koa-generic-views)
 [![npm license](https://img.shields.io/npm/l/koa-generic-views.svg?style=flat-square)](http://magicdawn.mit-license.org)
 
@@ -32,11 +33,9 @@ require('koa-generic-views')(app,{
   defaultExt: 'jade'
 });
 
-// reutrn thunks
-app.engine('jade',function(view,locals){
-  return function(done){
-    jade.renderFile(view,locals,done);
-  };
+// reutrn plain values
+app.engine('jade', function(view,locals){
+  return jade.renderFile(view, locals) // sync render, do not use in production
 });
 
 // or Promise
@@ -55,15 +54,14 @@ app.engine('jade',function(views,locals){
 var Promise = require('bluebird');
 app.engine('jade',Promise.promisify(jade.renderFile,jade));
 
-app.use(function *(){
-  yield this.render('template');
+app.use(ctx => {
+  return this.render('template');
 });
 ```
 
 app.engine('ext',engine);
-engine should return a thunk or a Promise
+engine should return a value or a Promise
 so use `Promise.promisify` with bluebird is also supported.
-
 
 
 ## Why
